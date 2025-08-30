@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>أبو ربع XO</title>
+<style>
+  body {
+    background: linear-gradient(45deg, #232526, #414345);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+  }
+  #status {
+    font-size: 28px;
+    color: #86a8e7;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  #board {
+    display: grid;
+    grid-template-columns: repeat(3, 110px);
+    grid-template-rows: repeat(3, 110px);
+    gap: 12px;
+  }
+  .cell {
+    background-color: #232526;
+    border: 3px solid #86a8e7;
+    border-radius: 18px;
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .cell:hover {
+    background-color: #2a2c2e;
+  }
+  #resetBtn {
+    margin-top: 30px;
+    background-color: #414345;
+    border: 2px solid #86a8e7;
+    border-radius: 12px;
+    color: white;
+    font-size: 22px;
+    padding: 12px 40px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  #resetBtn:hover {
+    background-color: #3a3b3d;
+  }
+</style>
+</head>
+<body>
+
+<h1>أبو ربع عم الجميع</h1>
+<div id="status">الدور: X</div>
+
+<div id="board">
+  <!-- 9 خلايا هنا -->
+  <div class="cell" data-row="0" data-col="0"></div>
+  <div class="cell" data-row="0" data-col="1"></div>
+  <div class="cell" data-row="0" data-col="2"></div>
+
+  <div class="cell" data-row="1" data-col="0"></div>
+  <div class="cell" data-row="1" data-col="1"></div>
+  <div class="cell" data-row="1" data-col="2"></div>
+
+  <div class="cell" data-row="2" data-col="0"></div>
+  <div class="cell" data-row="2" data-col="1"></div>
+  <div class="cell" data-row="2" data-col="2"></div>
+</div>
+
+<button id="resetBtn">إعادة تعيين</button>
+
+<script>
+  const boardElement = document.getElementById('board');
+  const statusElement = document.getElementById('status');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let board = [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ];
+  let currentPlayer = 'X';
+  let gameActive = true;
+
+  function checkWinner() {
+    const b = board;
+    for(let i = 0; i < 3; i++) {
+      if(b[i][0] === currentPlayer && b[i][1] === currentPlayer && b[i][2] === currentPlayer) return true;
+      if(b[0][i] === currentPlayer && b[1][i] === currentPlayer && b[2][i] === currentPlayer) return true;
+    }
+    if(b[0][0] === currentPlayer && b[1][1] === currentPlayer && b[2][2] === currentPlayer) return true;
+    if(b[0][2] === currentPlayer && b[1][1] === currentPlayer && b[2][0] === currentPlayer) return true;
+    return false;
+  }
+
+  function isDraw() {
+    return board.flat().every(cell => cell !== '');
+  }
+
+  function updateStatus(msg) {
+    statusElement.textContent = msg;
+  }
+
+  function handleClick(e) {
+    if(!gameActive) return;
+
+    const cell = e.target;
+    const row = cell.dataset.row;
+    const col = cell.dataset.col;
+
+    if(board[row][col] !== '') return;
+
+    board[row][col] = currentPlayer;
+    cell.textContent = currentPlayer;
+
+    if(checkWinner()) {
+      updateStatus('ما تفوز على أبو ربع 😎');
+      alert('ما تفوز على أبو ربع!\nارجع تدرب وتعال 😎');
+      gameActive = false;
+      return;
+    }
+
+    if(isDraw()) {
+      updateStatus('تعادل؟ العب زين يابو لعب تعبان!');
+      alert('تعادل! العب زين يابو لعب تعبان!');
+      gameActive = false;
+      return;
+    }
+
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    updateStatus(`الدور: ${currentPlayer}`);
+  }
+
+  function resetGame() {
+    board = [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ];
+    gameActive = true;
+    currentPlayer = 'X';
+    updateStatus(`الدور: ${currentPlayer}`);
+    document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+  }
+
+  boardElement.addEventListener('click', handleClick);
+  resetBtn.addEventListener('click', resetGame);
+</script>
+
+</body>
+</html>
